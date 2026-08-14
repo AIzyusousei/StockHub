@@ -1,0 +1,22 @@
+# 依存ライブラリを記述するファイル。
+# "uv sync" を実行すると、pyproject.toml / uv.lock に基づいて .venv が同期される。
+
+[project]
+name = "stockhub-analytics"
+version = "0.1.0"
+requires-python = ">=3.14"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "numpy",
+    "pandas",
+]
+
+# 開発時にのみ使うライブラリ群
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.3",
+]
