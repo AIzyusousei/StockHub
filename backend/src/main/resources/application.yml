@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: stockhub-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stockhub
+    username: stockhub_user
+    password: ${STOCKHUB_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+doma:
+  dialect: postgres
+
+server:
+  port: 8080
