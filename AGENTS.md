@@ -7,7 +7,7 @@ StockHubは、株式投資の投資判断に向けた分析を行うwebアプリ
 
 ## Stack
 
-- frontend: Next.js
+- frontend: Next.js/ tailwindCSS
 - backend: Java Spring Boot/ Spring Doma
 - analytics: Python
 - database: PostgreSQL
