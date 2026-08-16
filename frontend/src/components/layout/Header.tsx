@@ -1,3 +1,4 @@
+import { Bell, CircleUserRound } from "lucide-react";
 import Link from "next/link";
 
 const navigation = [
@@ -9,36 +10,6 @@ const navigation = [
   { label: "投資日記", href: "/journal" },
   { label: "スクリーニング", href: "/screening" },
 ];
-
-function NotificationIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-7">
-      <path
-        d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function UserIcon() {
-  return (
-    <span className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-      <svg
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        aria-hidden="true"
-        className="size-9"
-      >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4.6 20a7.4 7.4 0 0 1 14.8 0A10 10 0 0 1 12 23a10 10 0 0 1-7.4-3Z" />
-      </svg>
-    </span>
-  );
-}
 
 export function Header() {
   return (
@@ -80,14 +51,18 @@ export function Header() {
             aria-label="通知を開く"
             className="hidden rounded-full p-1 transition-colors hover:bg-slate-100 hover:text-slate-700 sm:block"
           >
-            <NotificationIcon />
+            <Bell aria-hidden="true" className="size-7" strokeWidth={1.8} />
           </button>
           <button
             type="button"
             aria-label="ユーザーメニューを開く"
             className="rounded-full"
           >
-            <UserIcon />
+            <CircleUserRound
+              aria-hidden="true"
+              className="size-10 text-slate-400"
+              strokeWidth={1.5}
+            />
           </button>
         </div>
       </div>

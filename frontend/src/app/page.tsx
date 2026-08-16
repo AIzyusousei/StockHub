@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { MarketCard } from "@/components/market/MarketCard";
+import { WeeklyWatchlist } from "@/components/watchlist/WeeklyWatchlist";
 import { marketOverview } from "@/mocks/marketOverview";
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
               ))}
             </div>
           </section>
+          <WeeklyWatchlist />
         </div>
       </main>
     </div>
