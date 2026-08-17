@@ -11,12 +11,16 @@ const navigation = [
   { label: "スクリーニング", href: "/screening" },
 ];
 
-export function Header() {
+type HeaderProps = {
+  homeHref?: string;
+};
+
+export function Header({ homeHref = "/" }: HeaderProps) {
   return (
     <header className="relative z-10 border-b border-slate-200 bg-white shadow-[0_2px_8px_rgba(15,36,68,0.04)]">
       <div className="flex h-[82px] items-stretch gap-6 px-5 sm:px-8 lg:gap-10 lg:px-10">
         <Link
-          href="/"
+          href={homeHref}
           className="flex shrink-0 items-center text-[32px] font-bold tracking-[-0.055em] text-[#16335c] lg:text-[34px]"
         >
           StockHub
@@ -27,21 +31,25 @@ export function Header() {
           className="min-w-0 flex-1 overflow-x-auto lg:pl-16"
         >
           <ul className="flex h-full min-w-max items-stretch justify-start gap-7 lg:gap-12">
-            {navigation.map((item) => (
-              <li key={item.href} className="flex items-stretch">
-                <Link
-                  href={item.href}
-                  aria-current={item.active ? "page" : undefined}
-                  className={`flex items-center border-b-[3px] px-1 pt-[3px] text-[15px] font-semibold whitespace-nowrap transition-colors lg:text-[16px] ${
-                    item.active
-                      ? "border-[#246bfe] text-[#246bfe]"
-                      : "border-transparent text-slate-600 hover:text-[#246bfe]"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {navigation.map((item) => {
+              const href = item.active ? homeHref : item.href;
+
+              return (
+                <li key={item.label} className="flex items-stretch">
+                  <Link
+                    href={href}
+                    aria-current={item.active ? "page" : undefined}
+                    className={`flex items-center border-b-[3px] px-1 pt-[3px] text-[15px] font-semibold whitespace-nowrap transition-colors lg:text-[16px] ${
+                      item.active
+                        ? "border-[#246bfe] text-[#246bfe]"
+                        : "border-transparent text-slate-600 hover:text-[#246bfe]"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
