@@ -54,7 +54,7 @@ class MarketDataIngestionServiceTest {
         MarketDailyPriceUpsertResponse response = service.upsert(
                 new MarketDailyPriceUpsertRequest("nikkei", List.of(price, price)));
 
-        assertEquals(2, response.upsertedRows());
+        assertEquals(2, response.getUpsertedRows());
         assertEquals(2, upserted.size());
         assertEquals(42L, upserted.getFirst().getInstrumentId());
         assertEquals(LocalDate.of(2026, 8, 17), service.getLatestDate("nikkei"));

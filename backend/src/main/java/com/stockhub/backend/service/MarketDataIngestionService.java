@@ -27,8 +27,8 @@ public class MarketDataIngestionService {
 
     @Transactional
     public MarketDailyPriceUpsertResponse upsert(MarketDailyPriceUpsertRequest request) {
-        Long instrumentId = getInstrumentId(request.instrumentCode());
-        int updatedRows = request.prices().stream()
+        Long instrumentId = getInstrumentId(request.getInstrumentCode());
+        int updatedRows = request.getPrices().stream()
                 .map(price -> toEntity(instrumentId, price))
                 .mapToInt(marketDailyPriceDao::upsert)
                 .sum();
@@ -52,13 +52,13 @@ public class MarketDataIngestionService {
             Long instrumentId, MarketDailyPriceWriteRequest request) {
         MarketDailyPriceWriteEntity entity = new MarketDailyPriceWriteEntity();
         entity.setInstrumentId(instrumentId);
-        entity.setTradingDate(request.date());
-        entity.setOpen(request.open());
-        entity.setHigh(request.high());
-        entity.setLow(request.low());
-        entity.setClose(request.close());
-        entity.setAdjustedClose(request.adjustedClose());
-        entity.setVolume(request.volume());
+        entity.setTradingDate(request.getDate());
+        entity.setOpen(request.getOpen());
+        entity.setHigh(request.getHigh());
+        entity.setLow(request.getLow());
+        entity.setClose(request.getClose());
+        entity.setAdjustedClose(request.getAdjustedClose());
+        entity.setVolume(request.getVolume());
         return entity;
     }
 }

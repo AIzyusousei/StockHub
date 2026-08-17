@@ -2,10 +2,16 @@ package com.stockhub.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class MarketDailyPriceEntity {
 
     @Column(name = "instrument_code")
@@ -25,67 +31,4 @@ public class MarketDailyPriceEntity {
     private BigDecimal low;
     private BigDecimal close;
 
-    public String getInstrumentCode() {
-        return instrumentCode;
-    }
-
-    public void setInstrumentCode(String instrumentCode) {
-        this.instrumentCode = instrumentCode;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public Integer getDisplayOrder() {
-        return displayOrder;
-    }
-
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
-    }
-
-    public LocalDate getTradingDate() {
-        return tradingDate;
-    }
-
-    public void setTradingDate(LocalDate tradingDate) {
-        this.tradingDate = tradingDate;
-    }
-
-    public BigDecimal getOpen() {
-        return open;
-    }
-
-    public void setOpen(BigDecimal open) {
-        this.open = open;
-    }
-
-    public BigDecimal getHigh() {
-        return high;
-    }
-
-    public void setHigh(BigDecimal high) {
-        this.high = high;
-    }
-
-    public BigDecimal getLow() {
-        return low;
-    }
-
-    public void setLow(BigDecimal low) {
-        this.low = low;
-    }
-
-    public BigDecimal getClose() {
-        return close;
-    }
-
-    public void setClose(BigDecimal close) {
-        this.close = close;
-    }
 }

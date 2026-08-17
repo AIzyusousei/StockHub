@@ -42,11 +42,11 @@ class MarketOverviewServiceTest {
 
         MarketOverviewItemResponse response = service.getMarketOverview().getFirst();
 
-        assertEquals("nikkei", response.code());
-        assertEquals(new BigDecimal("110"), response.latestClose());
-        assertEquals(new BigDecimal("10"), response.priceChange());
-        assertEquals(0, new BigDecimal("10").compareTo(response.changeRate()));
-        assertEquals(2, response.candles().size());
+        assertEquals("nikkei", response.getCode());
+        assertEquals(new BigDecimal("110"), response.getLatestClose());
+        assertEquals(new BigDecimal("10"), response.getPriceChange());
+        assertEquals(0, new BigDecimal("10").compareTo(response.getChangeRate()));
+        assertEquals(2, response.getCandles().size());
     }
 
     private MarketDailyPriceEntity price(LocalDate tradingDate, String close) {
