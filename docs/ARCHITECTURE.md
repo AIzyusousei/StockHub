@@ -38,4 +38,13 @@ PostgreSQL
 
 ### Analytics
 
+### Market data flow
+
+`yfinance -> Analytics daily batch -> Spring Boot internal API -> PostgreSQL -> Spring Boot REST API -> Next.js`
+
+Next.jsとSpring Bootからstock data providerを直接呼ばない。provider固有の
+シンボルとDataFrame変換はAnalyticsの`providers/`に閉じ込める。
+PostgreSQLの読み書きはSpring BootのDoma DAOだけが担当し、Analyticsは
+DBへ直接接続しない。
+
 株式データ取得・分析・計算を担当する。

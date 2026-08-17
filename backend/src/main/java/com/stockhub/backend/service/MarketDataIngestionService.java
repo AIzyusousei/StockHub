@@ -1,0 +1,64 @@
+package com.stockhub.backend.service;
+
+import com.stockhub.backend.dao.MarketDailyPriceDao;
+import com.stockhub.backend.dto.MarketDailyPriceUpsertRequest;
+import com.stockhub.backend.dto.MarketDailyPriceUpsertResponse;
+import com.stockhub.backend.dto.MarketDailyPriceWriteRequest;
+import com.stockhub.backend.entity.MarketDailyPriceWriteEntity;
+import java.time.LocalDate;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+public class MarketDataIngestionService {
+
+    private final MarketDailyPriceDao marketDailyPriceDao;
+
+    public MarketDataIngestionService(MarketDailyPriceDao marketDailyPriceDao) {
+        this.marketDailyPriceDao = marketDailyPriceDao;
+    }
+
+    public LocalDate getLatestDate(String instrumentCode) {
+        assertInstrumentExists(instrumentCode);
+        return marketDailyPriceDao.selectLatestDate(instrumentCode);
+    }
+
+    @Transactional
+    public MarketDailyPriceUpsertResponse upsert(MarketDailyPriceUpsertRequest request) {
+        Long instrumentId = getInstrumentId(request.instrumentCode());
+        int updatedRows = request.prices().stream()
+                .map(price -> toEntity(instrumentId, price))
+                .mapToInt(marketDailyPriceDao::upsert)
+                .sum();
+        return new MarketDailyPriceUpsertResponse(updatedRows);
+    }
+
+    private void assertInstrumentExists(String instrumentCode) {
+        getInstrumentId(instrumentCode);
+    }
+
+    private Long getInstrumentId(String instrumentCode) {
+        Long instrumentId = marketDailyPriceDao.selectInstrumentId(instrumentCode);
+        if (instrumentId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Unknown market instrument: " + instrumentCode);
+        }
+        return instrumentId;
+    }
+
+    private MarketDailyPriceWriteEntity toEntity(
+            Long instrumentId, MarketDailyPriceWriteRequest request) {
+        MarketDailyPriceWriteEntity entity = new MarketDailyPriceWriteEntity();
+        entity.setInstrumentId(instrumentId);
+        entity.setTradingDate(request.date());
+        entity.setOpen(request.open());
+        entity.setHigh(request.high());
+        entity.setLow(request.low());
+        entity.setClose(request.close());
+        entity.setAdjustedClose(request.adjustedClose());
+        entity.setVolume(request.volume());
+        return entity;
+    }
+}

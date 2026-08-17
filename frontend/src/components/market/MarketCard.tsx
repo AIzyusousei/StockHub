@@ -1,4 +1,4 @@
-import type { MarketOverviewItem } from "@/mocks/marketOverview";
+import type { MarketOverviewItem } from "@/types/marketOverview";
 import { CandlestickChart } from "./CandlestickChart";
 
 type MarketCardProps = {
@@ -15,12 +15,16 @@ export function MarketCard({ market }: MarketCardProps) {
         <p className="text-[24px] font-semibold leading-none tracking-tight text-[#10294c] sm:text-[26px]">
           {market.value}
         </p>
-        <p className="text-[14px] font-semibold text-[#079348] sm:text-[15px]">
+        <p
+          className={`text-[14px] font-semibold sm:text-[15px] ${
+            market.direction === "up" ? "text-[#079348]" : "text-[#ef3535]"
+          }`}
+        >
           {market.change}&nbsp; {market.changeRate}
         </p>
       </div>
       <div className="mt-3">
-        <CandlestickChart candles={market.candles} ticks={market.ticks} />
+        <CandlestickChart candles={market.candles} />
       </div>
     </article>
   );

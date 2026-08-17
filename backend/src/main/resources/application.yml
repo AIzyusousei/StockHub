@@ -3,8 +3,8 @@ spring:
     name: stockhub-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/stockhub
-    username: stockhub_user
+    url: ${STOCKHUB_JDBC_URL:jdbc:postgresql://localhost:5432/stockhub}
+    username: ${STOCKHUB_DB_USER:stockhub_user}
     password: ${STOCKHUB_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 

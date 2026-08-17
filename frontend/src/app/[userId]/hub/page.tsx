@@ -1,17 +1,28 @@
-import { use, useId } from "react";
 import { Header } from "@/components/layout/Header";
 import { MarketCard } from "@/components/market/MarketCard";
 import { WeeklyWatchlist } from "@/components/watchlist/WeeklyWatchlist";
-import { marketOverview } from "@/mocks/marketOverview";
+import { fetchMarketOverview } from "@/lib/api/marketOverviewApi";
+import { mapMarketOverviewItems } from "@/lib/mapper/marketOverviewMapper";
+import type { MarketOverviewItem } from "@/types/marketOverview";
 
 type HubPageProps = {
   params: Promise<{ userId: string }>;
 };
 
-export default function HubPage({ params }: HubPageProps) {
-  const { userId } = use(params);
-  const welcomeTitleId = useId();
-  const marketOverviewTitleId = useId();
+export default async function HubPage({ params }: HubPageProps) {
+  const { userId } = await params;
+  const welcomeTitleId = `${userId}-welcome-title`;
+  const marketOverviewTitleId = `${userId}-market-overview-title`;
+  let marketOverview: MarketOverviewItem[] = [];
+  let marketOverviewLoadFailed = false;
+
+  try {
+    const response = await fetchMarketOverview();
+    marketOverview = mapMarketOverviewItems(response);
+  } catch (error) {
+    console.error("Market Overview APIの取得に失敗しました。", error);
+    marketOverviewLoadFailed = true;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f3f6fa] text-[#10294c]">
@@ -23,7 +34,7 @@ export default function HubPage({ params }: HubPageProps) {
               <span className="h-14 w-1.5 rounded-full bg-[#2c73ff] shadow-[0_0_10px_rgba(44,115,255,0.25)]" />
               <h1
                 id={welcomeTitleId}
-                className="text-[29px] font-bold tracking-tight text-[#10294c] sm:text-[36px]"
+                className="text-3xl font-bold tracking-tight text-[#10294c] sm:text-4xl"
               >
                 StockHubへようこそ
               </h1>
@@ -36,15 +47,26 @@ export default function HubPage({ params }: HubPageProps) {
           <section aria-labelledby={marketOverviewTitleId} className="mt-8">
             <h2
               id={marketOverviewTitleId}
-              className="mb-3 text-[20px] font-medium tracking-tight text-[#10294c]"
+              className="mb-3 text-xl font-medium tracking-tight text-[#10294c]"
             >
               Market Overview
             </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-6">
-              {marketOverview.map((market) => (
-                <MarketCard key={market.id} market={market} />
-              ))}
-            </div>
+            {marketOverviewLoadFailed ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+                Backend
+                APIから市場データを取得できませんでした。BackendとPostgreSQLの起動・接続設定を確認してください。
+              </div>
+            ) : marketOverview.length === 0 ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+                保存済みの市場データがありません。日次更新バッチを実行してください。
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-6">
+                {marketOverview.map((market) => (
+                  <MarketCard key={market.id} market={market} />
+                ))}
+              </div>
+            )}
           </section>
           <WeeklyWatchlist />
         </div>

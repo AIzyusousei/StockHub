@@ -31,6 +31,8 @@
 
 ## Analytics
 
+- `clients/`: AnalyticsからSpring Boot内部APIへの通信を担当する。
+
 株式データ取得・分析・計算処理を配置する。
 
 - `api/`: FastAPIのエンドポイントを定義する。外部からAnalyticsを呼び出すためのHTTPインターフェースを担当する。
