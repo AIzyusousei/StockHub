@@ -54,6 +54,39 @@ Analyticsの日次バッチだけが利用するSpring Boot内部API。
 
 日足のPostgreSQLへのUPSERTは後者を受けたSpring Boot ServiceとDoma DAOが行う。
 
+Analyticsから送信するRequest body:
+
+```json
+{
+  "instrumentCode": "nikkei",
+  "prices": [
+    {
+      "date": "2026-08-17",
+      "open": 42000.0,
+      "high": 43000.0,
+      "low": 41800.0,
+      "close": 42718.47,
+      "adjustedClose": 42718.47,
+      "volume": 1000000
+    }
+  ]
+}
+```
+
+同じ`instrumentCode`と`date`の組み合わせを再送しても、
+`market_daily_price`の複合UNIQUE制約を利用したUPSERTにより重複行は作成しない。
+
+対象instrumentは以下の6種類である。
+
+| code | yfinance symbol | 表示 |
+|---|---|---|
+| `nikkei` | `^N225` | 日経平均 |
+| `topix` | `1306.T` | TOPIX連動ETF proxy |
+| `usd-jpy` | `JPY=X` | ドル円 |
+| `nasdaq` | `^IXIC` | NASDAQ |
+| `sp500` | `^GSPC` | S&P500 |
+| `us10y` | `^TNX` | 米国10年国債利回り |
+
 
 ## DTO
 
@@ -61,15 +94,15 @@ ControllerからEntityを直接返さず、
 Request / Response DTOを使用する。
 
 
-## Analytics API
+## Analytics通信
 
-BackendからAnalyticsへ、
-株式分析・計算処理を要求する場合がある。
+Analyticsは現在、外部公開APIを提供しない。日次バッチが`httpx`でSpring Bootの
+Internal Market Data APIを呼び出す。
 
 
 ## Stock Data Provider
 
-StockHubではyfinanceを利用予定。
+StockHubではAnalyticsの`providers/`からyfinanceを利用する。
 
 将来のIndexArenaではmarketstack等への変更を想定する。
 

@@ -10,6 +10,8 @@ schema変更時に更新する。
 - table / column名はsnake_case
 - relationにはForeign Keyを設定する
 - 必要なUNIQUE constraintを設定する
+- PostgreSQLへの読み書きはSpring BootのDoma DAOだけが担当する
+- AnalyticsとFrontendはPostgreSQLへ直接接続しない
 
 
 ## Schema
@@ -48,5 +50,18 @@ Analyticsから受け取ったデータをSpring Bootが保存する日足OHLC�
 
 Migration: `backend/src/main/resources/db/migration/V1__create_market_daily_prices.sql`
 
-実装したtableについて、
-column・type・constraint・relationを本documentに追記する。
+初期Migrationでは6種類の`market_instrument`をseedする。日次データの取得はAnalytics、
+保存とUPSERTはSpring Bootの`MarketDataIngestionService`およびDoma DAOが担当する。
+
+## Initial setup
+
+Backendの接続先は環境変数で指定する。
+
+```text
+STOCKHUB_JDBC_URL=jdbc:postgresql://localhost:5432/stockhub
+STOCKHUB_DB_USER=stockhub_user
+STOCKHUB_DB_PASSWORD=<DB password>
+```
+
+`stockhub_user`に`public`スキーマの作成権限がない環境では、DB管理者で権限を付与してから
+上記Migrationを適用する。

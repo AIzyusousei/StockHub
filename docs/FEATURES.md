@@ -2,6 +2,16 @@
 
 ## StockHub
 
+### Implemented
+
+- StockHub Hub画面のMarket Overview表示
+- 日経平均、TOPIX連動ETF、ドル円、NASDAQ、S&P500、米国10年国債利回りの日足表示
+- Spring Boot API経由の市場データ取得
+- Lightweight Chartsによるローソク足チャート
+- RechartsによるWatchlist sparkline
+
+### Planned
+
 以下の機能を予定する。
 
 - Watchlistの作成・閲覧・編集
