@@ -26,7 +26,7 @@ export default async function HubPage({ params }: HubPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f3f6fa] text-[#10294c]">
-      <Header homeHref={`/${userId}/hub`} />
+      <Header homeHref={`/${userId}/hub`} userId={userId} />
       <main className="mx-2 mb-2 flex-1 rounded-b-xl bg-white px-5 pb-9 pt-10 shadow-[0_8px_30px_rgba(15,36,68,0.05)] sm:px-10 lg:px-14">
         <div className="mx-auto max-w-[1544px]">
           <section aria-labelledby={welcomeTitleId}>

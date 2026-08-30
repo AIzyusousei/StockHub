@@ -41,6 +41,7 @@ IndexArenaではmarketstack等の別data providerへ変更する可能性があ�
 
 # Development Rules
 
+- [重要]react/ java/ python初心者に対して理解しやすい、簡単な文法を使用する実装にすること。美しいコードよりも、理解に高度な知識を要さない実装を行うこと。ただし、ロジックの難解さは許容するものとする。
 - 実装前に関連codeとdocumentationを確認する
 - 既存の設計・命名・directory構造を優先する
 - 無関係なfileを変更しない

@@ -27,6 +27,7 @@ Spring Boot Backend
 
 UI・ユーザー操作・Backend APIとの通信を担当する。FrontendはPostgreSQLや
 yfinanceへ直接アクセスしない。
+アイコンは、react-lucideを使用すること。
 
 ### Backend
 
