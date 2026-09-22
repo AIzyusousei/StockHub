@@ -11,10 +11,13 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ResponsiveContainer, Treemap } from "recharts";
-import { Header } from "@/components/layout/Header";
-import { WatchlistPageLayout } from "@/components/watchlist/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/components/watchlist/WatchlistSidebar";
-import { type HeatmapItem, heatmapItems } from "@/mocks/heatmapCheck";
+import { Header } from "@/components/common/Header";
+import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
+import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
+import {
+  type HeatmapItem,
+  heatmapItems,
+} from "@/features/watchlist/mocks/heatmapCheck";
 
 const lists = [
   "検索履歴ウォッチリスト",

@@ -30,12 +30,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Header } from "@/components/layout/Header";
-import { WatchlistPageLayout } from "@/components/watchlist/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/components/watchlist/WatchlistSidebar";
-import { WatchlistStockSearch } from "@/components/watchlist/WatchlistStockSearch";
-import { chartCheckData } from "@/mocks/chartCheck";
-import { watchlistCheckItems } from "@/mocks/watchlistCheck";
+import { Header } from "@/components/common/Header";
+import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
+import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
+import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
+import { chartCheckData } from "@/features/watchlist/mocks/chartCheck";
+import { watchlistCheckItems } from "@/features/watchlist/mocks/watchlistCheck";
 
 export default function ChartCheckPage() {
   const { userId, watchlistId } = useParams<{

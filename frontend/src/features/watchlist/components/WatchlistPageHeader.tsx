@@ -1,5 +1,5 @@
-import { WatchlistCheckTabs } from "@/components/watchlist/WatchlistCheckTabs";
-import { WatchlistPageTitle } from "@/components/watchlist/WatchlistPageTitle";
+import { WatchlistCheckTabs } from "@/features/watchlist/components/WatchlistCheckTabs";
+import { WatchlistPageTitle } from "@/features/watchlist/components/WatchlistPageTitle";
 
 export type WatchlistPageHeaderProps = {
   userId: string;

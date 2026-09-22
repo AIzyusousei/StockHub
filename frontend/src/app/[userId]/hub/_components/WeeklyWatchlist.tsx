@@ -1,5 +1,5 @@
 import { Pencil } from "lucide-react";
-import { weeklyWatchlist } from "@/mocks/weeklyWatchlist";
+import { weeklyWatchlist } from "@/features/watchlist/mocks/weeklyWatchlist";
 import { Sparkline } from "./Sparkline";
 
 const formatChange = (value: number) =>

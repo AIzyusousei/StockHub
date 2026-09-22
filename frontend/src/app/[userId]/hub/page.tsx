@@ -1,9 +1,9 @@
-import { Header } from "@/components/layout/Header";
-import { MarketCard } from "@/components/market/MarketCard";
-import { WeeklyWatchlist } from "@/components/watchlist/WeeklyWatchlist";
+import { Header } from "@/components/common/Header";
+import { mapMarketOverviewItems } from "@/lib/api/mapper/marketOverviewMapper";
 import { fetchMarketOverview } from "@/lib/api/marketOverviewApi";
-import { mapMarketOverviewItems } from "@/lib/mapper/marketOverviewMapper";
 import type { MarketOverviewItem } from "@/types/marketOverview";
+import { MarketCard } from "./_components/MarketCard";
+import { WeeklyWatchlist } from "./_components/WeeklyWatchlist";
 
 type HubPageProps = {
   params: Promise<{ userId: string }>;

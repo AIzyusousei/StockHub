@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Header } from "@/components/layout/Header";
-import { WatchlistPageTitle } from "@/components/watchlist/WatchlistPageTitle";
-import { WatchlistSidebar } from "@/components/watchlist/WatchlistSidebar";
+import { Header } from "@/components/common/Header";
+import { WatchlistPageTitle } from "@/features/watchlist/components/WatchlistPageTitle";
+import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 
 const initialBaseLists = ["なんとなく注目テック", "memory & light"];
 const savedLists = [

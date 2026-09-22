@@ -1,8 +1,8 @@
 import {
   WatchlistPageHeader,
   type WatchlistPageHeaderProps,
-} from "@/components/watchlist/WatchlistPageHeader";
-import { WatchlistSidebar } from "@/components/watchlist/WatchlistSidebar";
+} from "@/features/watchlist/components/WatchlistPageHeader";
+import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 
 type WatchlistPageLayoutProps = WatchlistPageHeaderProps & {
   children: React.ReactNode;

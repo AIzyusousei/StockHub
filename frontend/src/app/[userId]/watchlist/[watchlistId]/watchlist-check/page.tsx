@@ -4,11 +4,11 @@
 import { Clock3, Plus, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Header } from "@/components/layout/Header";
-import { WatchlistPageLayout } from "@/components/watchlist/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/components/watchlist/WatchlistSidebar";
-import { WatchlistStockSearch } from "@/components/watchlist/WatchlistStockSearch";
-import { watchlistCheckItems } from "@/mocks/watchlistCheck";
+import { Header } from "@/components/common/Header";
+import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
+import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
+import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
+import { watchlistCheckItems } from "@/features/watchlist/mocks/watchlistCheck";
 
 const weekly = ["#26/08/17 week", "#26/08/10 week", "#26/08/03 week"];
 const permanent = [

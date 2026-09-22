@@ -1,6 +1,6 @@
 import { Bell, CircleUserRound } from "lucide-react";
 import Link from "next/link";
-import { currentWeeklyWatchlistId } from "@/mocks/watchlistCheck";
+import { currentWeeklyWatchlistId } from "@/features/watchlist/mocks/watchlistCheck";
 
 const navigation = [
   { key: "home", label: "ホーム", href: "/" },
