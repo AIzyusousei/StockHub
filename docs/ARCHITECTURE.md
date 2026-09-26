@@ -9,17 +9,9 @@ StockHubは以下で構成する。
 - Analytics: Python / yfinance
 - Database: PostgreSQL
 
-基本構成:
-
-```text
-Next.js Frontend
-    ↓ REST API
-Spring Boot Backend
-    ├─ Doma DAO → PostgreSQL
-    └─ Internal API ← Analytics batch
-                         ↓
-                       yfinance
-```
+- frontend: Next.js/ tailwindCSS でUI・画面状態・ユーザー操作などのfrontend処理を担当する。
+- backend: Java Spring Boot/ Spring Doma でアプリケーションロジック・認証認可などのbackend処理を担当する。
+- analytics: Python でデータ取得・統計処理などの分析処理を担当する。
 
 ## Responsibilities
 
@@ -33,9 +25,7 @@ yfinanceへ直接アクセスしない。
 
 REST API・business logic・database accessを担当する。依存方向は以下とする。
 
-```text
 Controller → Service → DAO → PostgreSQL
-```
 
 ControllerからDoma Entityを直接返さず、DTOへ変換して返す。
 
@@ -44,10 +34,3 @@ ControllerからDoma Entityを直接返さず、DTOへ変換して返す。
 株式データ取得・分析・計算を担当する。Market Overviewの日次バッチは、
 `yfinance`で日足データを取得し、Spring Boot内部APIへ送信する。
 AnalyticsはPostgreSQLへ直接接続しない。
-
-### Market data flow
-
-`yfinance → Analytics daily batch → Spring Boot internal API → PostgreSQL → Spring Boot REST API → Next.js`
-
-provider固有のシンボルとDataFrame変換はAnalyticsの`providers/`に閉じ込める。
-

@@ -7,6 +7,8 @@
 - `analytics/`: Python
 - `docs/`: 設計・仕様document
 
+
+
 ## Frontend
 
 - `app/`: page・layout・routing。特定画面でのみ使用するcomponentも画面配下に配置
@@ -31,6 +33,8 @@
 - `mocks/`: Frontend全体のmock基盤
 - `types/`: 複数featureで使用する共通TypeScript型
 - `utils/`: 汎用utility
+
+
 
 ## Backend
 
@@ -64,22 +68,53 @@ Entity・DTOのaccessorとconstructorはLombokで生成する。
 
 Domaの外部SQLは `src/main/resources/META-INF/com/stockhub/backend/` 以下に、Java側のfeature・DAO packageと対応する構造で配置する。
 
+
+
 ## Analytics
 
-- `clients/`: AnalyticsからSpring Boot内部APIへの通信
-- `providers/`: yfinanceなどの外部サービスとの通信
-- `dto/`: Analytics内部で受け渡すデータ構造
-- `jobs/`: 定期実行・バッチ処理のエントリーポイント
-- `core/`: 設定などAnalytics共通の基盤機能
+**## Analytics**
+
+- `common/`: Analytics全体で使用する共通基盤
+  - `config/`: 設定・環境変数
+  - `exceptions/`: 共通exception
+- `clients/`: Analyticsから他serviceへの通信
+  - `backend/`: Spring Boot内部APIとの通信
+- `acquisition/`: 外部データの取得・正規化
+  - `market_data/`: 株価・出来高などのmarket data取得
+    - `providers/`: yfinance・marketstackなどの外部data provider
+- `analysis/`: 取得済みデータを用いた分析処理
+  - `indicators/`: MACD・RSIなどのtechnical indicator計算
+  - `screening/`: screening条件判定・分析
+  - `orgindex/`: 自作Indexのweighting・Index値計算
+- `jobs/`: 定期実行・batch処理のentry point
+
+data取得処理は`acquisition/`、分析logicは`analysis/`に配置する。
+
+Analytics全体で使用する設定・exceptionなどの技術的な共通処理は`common/`に配置する。domain固有のmodel・処理は`common/`に置かず、それぞれのdomain配下に配置する。
 
 AnalyticsはDB接続用の`repositories/`を持たず、DBの読み書きはSpring Bootへ委譲する。
+
+
+
+## docs
+
+- basic information: AGENTS.md
+- System Architecture: docs/ARCHITECTURE.md
+- Feature detail: docs/FEATURES.md
+- Database design: docs/DATABASE.md
+- API design: docs/API.md
+- Directory design: docs/DIRECTORY.md
+- 実装手順や実装用参照資料: docs/implements
+- 各機能の仕様書: docs/specification
+- 人間用のメモ: docs/forHuman
+
+
+
 
 ## Directory Policy
 
 関連性の高いコードを近くに配置するFeature-based構成を基本とする。
 
 Frontendは「画面固有 → `app/`」「feature内共有 → `features/`」「全体共有 → `src`直下」で分ける。
-
 Backendはfeature / domain単位で分け、その内部を`controller`・`service`・`dao`などのlayerに分ける。複数featureから使用される場合でも、明確なdomainがあるものは`common/`ではなく、そのdomainが所有する。
-
 これにより、変更時に探索する範囲を限定し、人間およびCoding Agentのコード探索量を抑える。

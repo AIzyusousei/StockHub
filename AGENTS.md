@@ -22,7 +22,7 @@ StockHubは、株式投資の投資判断に向けた分析を行うwebアプリ
 - Feature detail: docs/FEATURES.md
 - Database design: docs/DATABASE.md
 - API design: docs/API.md
-- Directory design: docs/DIRECTORY.md
+- Directory design: docs/DIRECTORY.md 
 
 # Future Development
 
