@@ -1,50 +1,49 @@
-# StockHub 開発指針
+# StockHub 開発AI向け説明書
 
-## プロジェクト概要
+## Abstract
 
-StockHubは、株式のウォッチリスト、チャート分析、
-テクニカル指標、スクリーニング、仮想ポートフォリオ競争、
-独自指標および独自指数の作成機能を提供するWebアプリである。
+StockHubは、株式投資の投資判断に向けた分析を行うwebアプリである。
+ウォッチリスト、自作indexの作成、自作スクリーニング法の作成などが行えるアプリである。
 
-## 技術構成
+## Stack
 
-- frontend: Next.js / TypeScript
-- backend: Spring Boot / Java / Doma
-- analytics: Python
+- frontend: Next.js/ tailwindCSS でUI・画面状態・ユーザー操作などのfrontend処理を担当する。
+- backend: Java Spring Boot/ Spring Doma でアプリケーションロジック・認証認可などのbackend処理を担当する。
+- analytics: Python でデータ取得・統計処理などの分析処理を担当する。
 - database: PostgreSQL
+- api: (for stock information: yfinance) 
 
-## 責務
 
-### frontend
+# Documentation
 
-- 画面表示
-- ユーザー入力
-- チャート描画
-- Spring Boot APIの呼び出し
+各要素の詳細な指定は、以下に存在する。関連する実装を行う場合、当該documentを参照すること。
+- basic information: AGENTS.md
+- System Architecture: docs/ARCHITECTURE.md
+- Feature detail: docs/FEATURES.md
+- Database design: docs/DATABASE.md
+- API design: docs/API.md
+- Directory design: docs/DIRECTORY.md 
 
-### backend
+# Future Development
 
-- 認証・認可
-- ユーザー管理
-- ウォッチリスト
-- ポートフォリオ
-- スクリーニング
-- DB操作
-- Python処理の呼び出し
+StockHubは、将来的なIndexArenaの開発を前提として設計する。
 
-### analytics
+IndexArenaでは、StockHubの機能を基盤として、
+自作Indexの共有・比較・競争や、投資家全体の情報を利用した分析機能を追加する予定である。
 
-- 市場データ取得
-- テクニカル指標計算
-- 独自指標計算
-- 独自指数計算
-- ポートフォリオ分析
+StockHubではyfinanceを利用するが、
+IndexArenaではmarketstack等の別data providerへ変更する可能性がある。
 
-## 基本ルール
+そのため、business logicを特定のdata providerへ直接依存させないこと。
 
-- frontendからanalyticsを直接呼ばない
-- 外部向けAPIの入口は原則Spring Bootとする
-- Domaを使用し、Spring Data JPAは使用しない
-- SQLは原則DomaのSQLファイルに記述する
-- 秘密情報をGitへコミットしない
-- 大量計算は同期API内で実行しない
+ただし、将来拡張のための過度な実装は行わない。
+
+
+# Development Rules
+
+- [重要]react/ java/ python初心者に対して理解しやすい、簡単な文法を使用する実装にすること。ただし、ロジックの難解さは許容するものとする。
+- Frontendからdatabaseやstock data providerへ直接アクセスせず、backendを介する形とする。
+- analyticsからdatabaseへ直接アクセスせず、backendを介する形とする。
+- Backendは原則 Controller → Service → DAO の依存方向とする
+- Database accessにはDomaを使用する
+- ControllerからEntityを直接responseとして返さない

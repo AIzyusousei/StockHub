@@ -12,7 +12,11 @@ dependencies = [
     "httpx",
     "numpy",
     "pandas",
+    "yfinance>=0.2.50",
 ]
+
+[project.scripts]
+stockhub-update-market-data = "engine.jobs.update_market_daily:main"
 
 # 開発時にのみ使うライブラリ群
 [dependency-groups]
@@ -20,3 +24,6 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.3",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
