@@ -3,13 +3,13 @@
 ## Abstract
 
 StockHubは、株式投資の投資判断に向けた分析を行うwebアプリである。
-ウォッチリスト、自作indexの作成、自作スクリーニング法の作成などが行えるアプリになる予定である。
+ウォッチリスト、自作indexの作成、自作スクリーニング法の作成などが行えるアプリである。
 
 ## Stack
 
-- frontend: Next.js/ tailwindCSS
-- backend: Java Spring Boot/ Spring Doma
-- analytics: Python
+- frontend: Next.js/ tailwindCSS でUI・画面状態・ユーザー操作などのfrontend処理を担当する。
+- backend: Java Spring Boot/ Spring Doma でアプリケーションロジック・認証認可などのbackend処理を担当する。
+- analytics: Python でデータ取得・統計処理などの分析処理を担当する。
 - database: PostgreSQL
 - api: (for stock information: yfinance) 
 
@@ -41,12 +41,9 @@ IndexArenaではmarketstack等の別data providerへ変更する可能性があ�
 
 # Development Rules
 
-- [重要]react/ java/ python初心者に対して理解しやすい、簡単な文法を使用する実装にすること。美しいコードよりも、理解に高度な知識を要さない実装を行うこと。ただし、ロジックの難解さは許容するものとする。
-- 実装前に関連codeとdocumentationを確認する
-- 既存の設計・命名・directory構造を優先する
-- 無関係なfileを変更しない
-- 不要なdependencyやabstractionを追加しない
-- Frontendからdatabaseやstock data providerへ直接アクセスしない
+- [重要]react/ java/ python初心者に対して理解しやすい、簡単な文法を使用する実装にすること。ただし、ロジックの難解さは許容するものとする。
+- Frontendからdatabaseやstock data providerへ直接アクセスせず、backendを介する形とする。
+- analyticsからdatabaseへ直接アクセスせず、backendを介する形とする。
 - Backendは原則 Controller → Service → DAO の依存方向とする
 - Database accessにはDomaを使用する
 - ControllerからEntityを直接responseとして返さない
