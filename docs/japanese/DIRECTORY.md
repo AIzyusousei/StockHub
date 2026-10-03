@@ -99,14 +99,14 @@ AnalyticsはDB接続用の`repositories/`を持たず、DBの読み書きはSpri
 ## docs
 
 - basic information: AGENTS.md
-- System Architecture: docs/ARCHITECTURE.md
-- Feature detail: docs/FEATURES.md
-- Database design: docs/DATABASE.md
-- API design: docs/API.md
-- Directory design: docs/DIRECTORY.md
-- 実装手順や実装用参照資料: docs/implements
-- 各機能の仕様書: docs/specification
-- 人間用のメモ: docs/forHuman
+- System Architecture: docs/english/ARCHITECTURE.md
+- Feature detail: docs/english/FEATURES.md
+- Database design: docs/english/DATABASE.md
+- API design: docs/english/API.md
+- Directory design: docs/english/DIRECTORY.md
+- 実装手順や実装用参照資料: docs/english/implements
+- 各機能の仕様書: docs/english/specification
+- 人間用のメモ: docs/engish/forHuman
 
 
 
