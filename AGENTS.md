@@ -18,7 +18,7 @@ StockHubは、株式投資の投資判断に向けた分析を行うwebアプリ
 
 各要素の詳細な指定は、以下に存在する。関連する実装を行う場合、当該documentを参照すること。
 - basic information: AGENTS.md
-- System Architecture: docs/englihs/ARCHITECTURE.md
+- System Architecture: docs/englih/ARCHITECTURE.md
 - Feature detail: docs/english/FEATURES.md
 - Database design: docs/english/DATABASE.md
 - API design: docs/english/API.md

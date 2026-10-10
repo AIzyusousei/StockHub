@@ -72,7 +72,7 @@ Domaの外部SQLは `src/main/resources/META-INF/com/stockhub/backend/` 以下�
 
 ## Analytics
 
-**## Analytics**
+engine/
 
 - `common/`: Analytics全体で使用する共通基盤
   - `config/`: 設定・環境変数
