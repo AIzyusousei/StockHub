@@ -26,44 +26,39 @@ export function WatchlistSidebar() {
     userId: string;
     watchlistId?: string;
   }>();
-  const { state, copyStock, copyListStocks, reorderLists } = useWatchlists();
+  const { state, copyStock, moveList } = useWatchlists();
   const [draggedList, setDraggedList] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{
     id: string;
     mode: "copy" | "before" | "after";
   } | null>(null);
 
-  const dropMode = (event: DragEvent, id: string, group: WatchlistGroup) => {
+  const dropMode = (event: DragEvent) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    const sameGroup = state[group].some((name) => listId(name) === draggedList);
-    if (!draggedList || draggedList === id || !sameGroup) return "copy";
-    if (event.clientY < rect.top + rect.height * 0.25) return "before";
-    if (event.clientY > rect.bottom - rect.height * 0.25) return "after";
-    return "copy";
+    if (!draggedList) return "copy";
+    return event.clientY > rect.top + rect.height / 2 ? "after" : "before";
   };
-  const onDragOver = (event: DragEvent, id: string, group: WatchlistGroup) => {
+  const onDragOver = (event: DragEvent, id: string) => {
     if (!hasWatchlistDrag(event)) return;
     event.preventDefault();
-    const mode = dropMode(event, id, group);
+    const mode = dropMode(event);
     event.dataTransfer.dropEffect = mode === "copy" ? "copy" : "move";
     setDropTarget({ id, mode });
   };
   const onDrop = (event: DragEvent, id: string, group: WatchlistGroup) => {
     event.preventDefault();
     const drag = readWatchlistDrag(event);
-    const mode = dropMode(event, id, group);
+    const mode = dropMode(event);
     if (drag?.kind === "stock") copyStock(drag.sourceId, drag.symbol, id);
     if (drag?.kind === "list") {
-      if (mode !== "copy")
-        reorderLists(drag.sourceId, id, group, mode === "after");
-      else copyListStocks(drag.sourceId, id);
+      moveList(drag.sourceId, id, group, mode === "after");
     }
     setDropTarget(null);
     setDraggedList(null);
   };
 
   const rows = (names: string[], group: WatchlistGroup) =>
-    names.map((name) => {
+    names.map((name, index) => {
       const id = listId(name);
       return (
         // Native drag events are attached to the whole watchlist row.
@@ -79,18 +74,20 @@ export function WatchlistSidebar() {
             setDraggedList(null);
             setDropTarget(null);
           }}
-          onDragOver={(event) => onDragOver(event, id, group)}
+          onDragOver={(event) => onDragOver(event, id)}
           onDrop={(event) => onDrop(event, id, group)}
-          className={`cursor-grab rounded px-2 py-1 text-[15px] text-slate-600 active:cursor-grabbing ${
+          className={`cursor-grab px-2 py-1.5 text-[15px] text-slate-600 active:cursor-grabbing ${
             dropTarget?.id === id
               ? dropTarget.mode === "before"
-                ? "border-t-2 border-[#1760ed]"
+                ? "border-t-[5px] border-t-[#075cdf]"
                 : dropTarget.mode === "after"
-                  ? "border-b-2 border-[#1760ed]"
+                  ? "border-b-[5px] border-b-[#075cdf]"
                   : "bg-blue-100 ring-1 ring-[#1760ed]"
-              : ""
+              : index < names.length - 1
+                ? "border-b border-slate-200/70"
+                : ""
           }`}
-          title="上下端にドロップで並べ替え、中央にドロップで銘柄をコピー"
+          title="ウォッチリストを移動、銘柄をコピー"
         >
           <Link
             draggable={false}
@@ -124,7 +121,18 @@ export function WatchlistSidebar() {
           もっと見る <ChevronRight className="size-4" />
         </div>
       </SideCard>
-      <SideCard icon={<Bookmark />} title="ウォッチリスト">
+      <SideCard
+        icon={<Bookmark />}
+        title="ウォッチリスト"
+        action={
+          <Link
+            href={`/${userId}/watchlist/create`}
+            className="rounded-md border border-[#1760ed] px-3 py-1 text-sm font-semibold text-[#075cdf] hover:bg-blue-50"
+          >
+            作成
+          </Link>
+        }
+      >
         {rows(state.permanent, "permanent")}
       </SideCard>
       <SideCard icon={<History />} title="検索履歴ウォッチリスト">
@@ -140,17 +148,22 @@ function SideCard({
   icon,
   title,
   children,
+  action,
 }: {
   icon: React.ReactNode;
   title: string;
   children: React.ReactNode;
+  action?: React.ReactNode;
 }) {
   return (
     <div className="mt-3 rounded-xl border border-slate-200 p-4">
-      <h2 className="mb-2 flex items-center gap-3 font-semibold">
-        <span className="text-[#1760ed]">{icon}</span>
-        {title}
-      </h2>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <h2 className="flex items-center gap-3 font-semibold">
+          <span className="text-[#1760ed]">{icon}</span>
+          {title}
+        </h2>
+        {action}
+      </div>
       {children}
     </div>
   );

@@ -10,21 +10,11 @@ import {
   type LogicalRange,
   type Time,
 } from "lightweight-charts";
-import {
-  Bell,
-  CalendarDays,
-  ChartNoAxesCombined,
-  ChevronRight,
-  Grid3X3,
-  List,
-  Search,
-  Settings,
-} from "lucide-react";
+import { ChartNoAxesCombined, Grid3X3, List, Settings } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Header } from "@/components/common/Header";
 import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
 import { useWatchlists } from "@/features/watchlist/components/WatchlistStore";
 import {
@@ -61,7 +51,6 @@ export default function ChartCheckPage() {
             userId={userId}
             watchlistId={watchlistId}
             currentTab="chart"
-            sidebar={<WatchlistSidebar />}
           >
             <div className="hidden mb-5 flex items-center gap-5">
               <span className="h-11 w-1.5 rounded-full bg-[#246bfe]" />
@@ -108,80 +97,6 @@ export default function ChartCheckPage() {
   );
 }
 
-function _Sidebar() {
-  return (
-    <aside>
-      <div className="mb-3 flex h-12 overflow-hidden rounded-lg border border-slate-200">
-        <div className="flex flex-1 items-center gap-3 px-4 text-slate-400">
-          <Search className="size-5" />
-          リストを検索
-        </div>
-        <button
-          type="button"
-          className="border-l border-slate-200 px-5 font-semibold"
-        >
-          検索
-        </button>
-      </div>
-      <div className="rounded-xl border border-slate-200 p-4">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <CalendarDays className="size-5 text-[#1760ed]" />
-          週次ウォッチリスト
-        </h2>
-        {["#26/08/17 week", "#26/08/10 week", "#26/08/03 week"].map((name) => (
-          <div
-            key={name}
-            className="flex items-center gap-4 py-1.5 pl-1 text-slate-600"
-          >
-            <List className="size-4 text-slate-400" />
-            {name}
-          </div>
-        ))}
-        <div className="mt-1 flex justify-center gap-2 text-[#075cdf]">
-          もっと見る <ChevronRight className="size-4" />
-        </div>
-      </div>
-      <div className="mt-3 rounded-xl border border-slate-200 p-4">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <BookmarkIcon />
-          ウォッチリスト
-        </h2>
-        {[
-          "検索履歴ウォッチリスト",
-          "#本日注目",
-          "#明日注目",
-          "なんとなく注目テック",
-          "memory & light",
-          "日本バリュー株",
-          "セクター代表銘柄",
-          "日本株優良",
-          "米国成長株",
-          "セクター別etf",
-        ].map((name) => (
-          <div
-            key={name}
-            className="flex items-center gap-4 py-1 text-[15px] text-slate-600"
-          >
-            <List className="size-4 text-slate-400" />
-            {name}
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 rounded-xl border border-slate-200 p-4">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <Bell className="size-5 text-[#1760ed]" />
-          検索履歴ウォッチリスト
-        </h2>
-        <p className="mt-3 pl-8 text-sm text-slate-500">
-          最近の検索履歴（最大20件）
-        </p>
-      </div>
-    </aside>
-  );
-}
-function BookmarkIcon() {
-  return <span className="text-[#1760ed]">▱</span>;
-}
 function StockList({
   items,
   watchlistId,
@@ -216,7 +131,7 @@ function StockList({
       <table className="w-full text-left">
         <thead className="bg-slate-50 text-sm">
           <tr className="h-12">
-            <th>銘柄名</th>
+            <th className="px-4">銘柄名</th>
             <th>前日比</th>
             <th>5日前比</th>
           </tr>
@@ -259,7 +174,7 @@ function StockList({
               }}
               className={`h-[66px] cursor-grab border-t border-slate-200 active:cursor-grabbing ${selected === row.symbol ? "bg-blue-50 ring-1 ring-inset ring-[#7faeff]" : ""} ${dropTarget?.symbol === row.symbol ? (dropTarget.after ? "border-b-2 border-b-[#1760ed]" : "border-t-2 border-t-[#1760ed]") : ""}`}
             >
-              <th>
+              <th className="px-4">
                 <button
                   type="button"
                   onClick={() => onSelect(row.symbol)}

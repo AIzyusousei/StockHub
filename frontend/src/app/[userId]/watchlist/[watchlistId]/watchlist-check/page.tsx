@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Header } from "@/components/common/Header";
 import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
 import { useWatchlists } from "@/features/watchlist/components/WatchlistStore";
 import {
@@ -39,7 +38,6 @@ export default function WatchlistCheckPage() {
             userId={userId}
             watchlistId={watchlistId}
             currentTab="watchlist"
-            sidebar={<WatchlistSidebar />}
           >
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_190px]">
               <div className="flex flex-col gap-3 rounded-xl border border-slate-200 p-3 shadow-[0_4px_14px_rgba(15,36,68,0.03)] xl:flex-row xl:items-start">
@@ -51,7 +49,7 @@ export default function WatchlistCheckPage() {
                   className="flex h-11 items-center justify-center rounded-lg bg-[#1760ed] font-semibold text-white"
                 >
                   <Plus className="mr-2 size-5" />
-                  リストを新規作成
+                  リストを追加
                 </button>
                 <button
                   type="button"
@@ -113,7 +111,7 @@ function StockTable({
       <table className="w-full min-w-[1000px] text-left">
         <thead className="bg-slate-50">
           <tr className="h-12 text-sm font-semibold">
-            <th>銘柄名</th>
+            <th className="px-5">銘柄名</th>
             <th>価格</th>
             <th>前日比</th>
             <th>5日前比</th>
@@ -165,7 +163,7 @@ function StockTable({
               }}
               className={`h-[66px] cursor-grab border-t border-slate-200 active:cursor-grabbing ${dragged === item.symbol ? "opacity-50" : ""} ${dropTarget?.symbol === item.symbol ? (dropTarget.after ? "border-b-2 border-b-[#1760ed]" : "border-t-2 border-t-[#1760ed]") : ""}`}
             >
-              <th className="font-semibold text-[#075cdf]">
+              <th className="px-5 font-semibold text-[#075cdf]">
                 <button
                   type="button"
                   onClick={() => onSelect(item.symbol)}

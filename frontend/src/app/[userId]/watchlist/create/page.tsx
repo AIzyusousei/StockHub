@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  CalendarDays,
-  ChevronRight,
-  FileText,
-  List,
-  Plus,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Header } from "@/components/common/Header";
@@ -67,34 +59,6 @@ export default function CreateWatchlistPage() {
           </div>
           <div className="mt-6 flex flex-col gap-8 xl:flex-row">
             <WatchlistSidebar />
-            <aside className="hidden w-full shrink-0 xl:w-[354px]">
-              <div className="flex h-12 overflow-hidden rounded-lg border border-slate-200">
-                <div className="flex flex-1 items-center gap-3 px-4 text-slate-500">
-                  <Search className="size-5" />
-                  リストを検索
-                </div>
-                <button type="button" className="bg-[#1760ed] px-5 text-white">
-                  <Search className="size-5" />
-                </button>
-              </div>
-              <div className="overflow-hidden rounded-xl border border-slate-200">
-                <SideTitle icon={<CalendarDays />} title="週次ウォッチリスト" />
-                <div className="border-t border-slate-200 px-5 py-3">
-                  <SideRow text="#26/08/17 week" />
-                  <SideRow text="#26/08/10 week" />
-                  <SideRow text="#26/08/03 week" />
-                  <div className="mt-2 flex items-center justify-center gap-2 text-[#075cdf]">
-                    もっと見る <ChevronRight className="size-4" />
-                  </div>
-                </div>
-                <SideTitle icon={<List />} title="ウォッチリスト" />
-                <div className="border-t border-slate-200 px-5 py-3">
-                  {savedLists.map((item) => (
-                    <SideRow key={item} text={item} />
-                  ))}
-                </div>
-              </div>
-            </aside>
             <section className="min-w-0 flex-1 rounded-xl border border-slate-200 p-7 shadow-[0_4px_14px_rgba(15,36,68,0.03)] lg:px-11 lg:py-10">
               <div className="grid max-w-[1080px] grid-cols-[150px_1fr] items-center gap-x-12 gap-y-10">
                 <FieldLabel label="リスト名" required />
@@ -190,22 +154,6 @@ export default function CreateWatchlistPage() {
   );
 }
 
-function SideTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
-  return (
-    <h2 className="flex items-center gap-3 px-5 py-4 font-semibold">
-      <span className="text-[#1760ed]">{icon}</span>
-      {title}
-    </h2>
-  );
-}
-function SideRow({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-3 py-1 text-[15px] text-slate-600">
-      <FileText className="size-4 text-slate-500" />
-      {text}
-    </div>
-  );
-}
 function FieldLabel({
   label,
   required,

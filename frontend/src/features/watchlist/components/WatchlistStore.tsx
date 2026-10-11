@@ -54,8 +54,7 @@ type WatchlistStore = {
   ) => void;
   removeStock: (id: string, symbol: string) => void;
   copyStock: (sourceId: string, symbol: string, targetId: string) => void;
-  copyListStocks: (sourceId: string, targetId: string) => void;
-  reorderLists: (
+  moveList: (
     sourceId: string,
     targetId: string,
     group: WatchlistGroup,
@@ -162,37 +161,42 @@ export function WatchlistProvider({
       };
     });
   };
-  const copyListStocks = (sourceId: string, targetId: string) => {
-    if (sourceId === targetId) return;
-    setState((current) => {
-      const source = current.stocks[sourceId] ?? [];
-      const target = current.stocks[targetId] ?? [];
-      const missing = source.filter(
-        (item) => !target.some((existing) => existing.symbol === item.symbol),
-      );
-      if (missing.length === 0) return current;
-      return {
-        ...current,
-        stocks: {
-          ...current.stocks,
-          [targetId]: [...target, ...missing.map((item) => ({ ...item }))],
-        },
-      };
-    });
-  };
-  const reorderLists = (
+  const moveList = (
     sourceId: string,
     targetId: string,
     group: WatchlistGroup,
     after: boolean,
   ) => {
     setState((current) => {
-      const source = current[group].find((name) => listId(name) === sourceId);
+      const sourceGroup: WatchlistGroup | null = current.weekly.some(
+        (name) => listId(name) === sourceId,
+      )
+        ? "weekly"
+        : current.permanent.some((name) => listId(name) === sourceId)
+          ? "permanent"
+          : null;
+      if (!sourceGroup || sourceId === targetId) return current;
+      const source = current[sourceGroup].find(
+        (name) => listId(name) === sourceId,
+      );
       const target = current[group].find((name) => listId(name) === targetId);
       if (!source || !target) return current;
+      if (sourceGroup === group) {
+        return {
+          ...current,
+          [group]: moveItem(current[group], source, target, after),
+        };
+      }
+      const destination = [...current[group]];
+      destination.splice(
+        destination.indexOf(target) + (after ? 1 : 0),
+        0,
+        source,
+      );
       return {
         ...current,
-        [group]: moveItem(current[group], source, target, after),
+        [sourceGroup]: current[sourceGroup].filter((name) => name !== source),
+        [group]: destination,
       };
     });
   };
@@ -205,8 +209,7 @@ export function WatchlistProvider({
         reorderStocks,
         removeStock,
         copyStock,
-        copyListStocks,
-        reorderLists,
+        moveList,
       }}
     >
       {children}

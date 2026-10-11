@@ -1,36 +1,16 @@
 "use client";
 
-import {
-  CalendarDays,
-  ChevronDown,
-  ChevronRight,
-  Grid3X3,
-  List,
-  Search,
-} from "lucide-react";
+import { ChevronDown, Grid3X3, List } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ResponsiveContainer, Treemap } from "recharts";
 import { Header } from "@/components/common/Header";
 import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
-import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 import {
   type HeatmapItem,
   heatmapItems,
 } from "@/features/watchlist/mocks/heatmapCheck";
 
-const lists = [
-  "検索履歴ウォッチリスト",
-  "#本日注目",
-  "#明日注目",
-  "なんとなく注目テック",
-  "memory & light",
-  "日本バリュー株",
-  "セクター代表銘柄",
-  "日本株優良",
-  "米国成長株",
-  "セクター別etf",
-];
 const colorFor = (change: number) =>
   change >= 0
     ? `rgb(${Math.max(50, 210 - change * 32)}, ${Math.min(190, 175 + change * 15)}, ${Math.max(75, 125 - change * 12)})`
@@ -57,7 +37,6 @@ export default function HeatmapCheckPage() {
             userId={userId}
             watchlistId={watchlistId}
             currentTab="heatmap"
-            sidebar={<WatchlistSidebar />}
           >
             <div className="hidden mb-5 flex items-center gap-5">
               <span className="h-11 w-1.5 rounded-full bg-[#246bfe]" />
@@ -97,60 +76,6 @@ export default function HeatmapCheckPage() {
   );
 }
 
-function _Sidebar() {
-  return (
-    <aside>
-      <div className="mb-3 flex h-12 overflow-hidden rounded-lg border border-slate-200">
-        <div className="flex flex-1 items-center gap-3 px-4 text-slate-400">
-          <Search className="size-5" />
-          リストを検索
-        </div>
-        <button
-          type="button"
-          className="border-l border-slate-200 px-5 font-semibold"
-        >
-          検索
-        </button>
-      </div>
-      <div className="rounded-xl border border-slate-200 p-4">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <CalendarDays className="size-5 text-[#1760ed]" />
-          週次ウォッチリスト
-        </h2>
-        {["#26/08/17 week", "#26/08/10 week", "#26/08/03 week"].map((name) => (
-          <SideRow key={name} text={name} />
-        ))}
-        <div className="mt-1 flex justify-center gap-2 text-[#075cdf]">
-          もっと見る <ChevronRight className="size-4" />
-        </div>
-      </div>
-      <div className="mt-3 rounded-xl border border-slate-200 p-4">
-        <h2 className="mb-2 flex items-center gap-3 font-semibold">
-          <span className="text-[#1760ed]">♧</span>ウォッチリスト
-        </h2>
-        {lists.map((name) => (
-          <SideRow key={name} text={name} />
-        ))}
-      </div>
-      <div className="mt-3 rounded-xl border border-slate-200 p-4">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <span className="text-[#1760ed]">◷</span>検索履歴ウォッチリスト
-        </h2>
-        <p className="mt-3 pl-8 text-sm text-slate-500">
-          最近の検索履歴（最大20件）
-        </p>
-      </div>
-    </aside>
-  );
-}
-function SideRow({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-4 py-1 pl-1 text-[15px] text-slate-600">
-      <List className="size-4 text-slate-400" />
-      {text}
-    </div>
-  );
-}
 function HeatmapMain() {
   return (
     <section className="min-w-0">
