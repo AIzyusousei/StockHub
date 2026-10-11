@@ -14,23 +14,20 @@ import { useState } from "react";
 import { Header } from "@/components/common/Header";
 import { WatchlistPageTitle } from "@/features/watchlist/components/WatchlistPageTitle";
 import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
+import {
+  listId,
+  useWatchlists,
+} from "@/features/watchlist/components/WatchlistStore";
+import {
+  hasWatchlistDrag,
+  readWatchlistDrag,
+} from "@/features/watchlist/components/watchlistDrag";
 
 const initialBaseLists = ["なんとなく注目テック", "memory & light"];
-const savedLists = [
-  "検索履歴ウォッチリスト",
-  "#本日注目",
-  "#明日注目",
-  "なんとなく注目テック",
-  "memory & light",
-  "日本バリュー株",
-  "セクター代表銘柄",
-  "日本高配当",
-  "米国成長株",
-  "セクター別etf",
-];
-
 export default function CreateWatchlistPage() {
   const { userId } = useParams<{ userId: string }>();
+  const { state } = useWatchlists();
+  const savedLists = state.permanent;
   const [name, setName] = useState("宇宙");
   const [kind, setKind] = useState("temporary");
   const [baseLists, setBaseLists] = useState(initialBaseLists);
@@ -69,7 +66,7 @@ export default function CreateWatchlistPage() {
             </button>
           </div>
           <div className="mt-6 flex flex-col gap-8 xl:flex-row">
-            <WatchlistSidebar permanent={savedLists} />
+            <WatchlistSidebar />
             <aside className="hidden w-full shrink-0 xl:w-[354px]">
               <div className="flex h-12 overflow-hidden rounded-lg border border-slate-200">
                 <div className="flex flex-1 items-center gap-3 px-4 text-slate-500">
@@ -122,7 +119,24 @@ export default function CreateWatchlistPage() {
                   />
                 </div>
                 <FieldLabel label="ベースリスト" />
-                <div>
+                {/* biome-ignore lint/a11y/noStaticElementInteractions: native drag target */}
+                <div
+                  onDragOver={(event) => {
+                    if (hasWatchlistDrag(event)) event.preventDefault();
+                  }}
+                  onDrop={(event) => {
+                    const drag = readWatchlistDrag(event);
+                    if (drag?.kind !== "list") return;
+                    event.preventDefault();
+                    const sourceName = [
+                      ...state.weekly,
+                      ...state.permanent,
+                    ].find((item) => listId(item) === drag.sourceId);
+                    if (sourceName && !baseLists.includes(sourceName)) {
+                      setBaseLists((current) => [...current, sourceName]);
+                    }
+                  }}
+                >
                   <p className="mb-4 text-slate-600">
                     既存のウォッチリストをベースとして利用できます。
                   </p>

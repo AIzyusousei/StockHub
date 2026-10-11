@@ -7,6 +7,7 @@ import {
   HistogramSeries,
   type IChartApi,
   LineSeries,
+  type LogicalRange,
   type Time,
 } from "lightweight-charts";
 import {
@@ -20,33 +21,32 @@ import {
   Settings,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Header } from "@/components/common/Header";
 import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
 import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
+import { useWatchlists } from "@/features/watchlist/components/WatchlistStore";
+import {
+  hasWatchlistDrag,
+  readWatchlistDrag,
+  startWatchlistDrag,
+} from "@/features/watchlist/components/watchlistDrag";
 import { chartCheckData } from "@/features/watchlist/mocks/chartCheck";
-import { watchlistCheckItems } from "@/features/watchlist/mocks/watchlistCheck";
+import type { WatchlistCheckItem } from "@/features/watchlist/mocks/watchlistCheck";
 
 export default function ChartCheckPage() {
   const { userId, watchlistId } = useParams<{
     userId: string;
     watchlistId: string;
   }>();
+  const { getStocks, reorderStocks } = useWatchlists();
+  const items = getStocks(watchlistId);
   const [selected, setSelected] = useState("NVDA");
-  const item =
-    watchlistCheckItems.find((row) => row.symbol === selected) ??
-    watchlistCheckItems[0];
-  const chartData = chartCheckData[selected] ?? chartCheckData.NVDA;
+  const item = items.find((row) => row.symbol === selected) ?? items[0];
+  const chartData = item
+    ? (chartCheckData[item.symbol] ?? chartCheckData.NVDA)
+    : null;
   return (
     <div className="min-h-screen bg-[#f3f6fa] text-[#10294c]">
       <Header
@@ -82,9 +82,23 @@ export default function ChartCheckPage() {
               <Tab label="ヒートマップチェック" icon={<Grid3X3 />} />
             </div>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[410px_minmax(500px,1fr)]">
-              <StockList selected={selected} onSelect={setSelected} />
+              <StockList
+                items={items}
+                watchlistId={watchlistId}
+                selected={item?.symbol ?? ""}
+                onSelect={setSelected}
+                onReorder={(source, target, after) =>
+                  reorderStocks(watchlistId, source, target, after)
+                }
+              />
               <div className="xl:mt-[69px]">
-                <ChartPanel item={item} data={chartData} />
+                {item && chartData ? (
+                  <ChartPanel key={item.symbol} item={item} data={chartData} />
+                ) : (
+                  <p className="rounded-xl border border-slate-200 p-6 text-slate-500">
+                    銘柄をウォッチリストに追加してください。
+                  </p>
+                )}
               </div>
             </div>
           </WatchlistPageLayout>
@@ -169,12 +183,22 @@ function BookmarkIcon() {
   return <span className="text-[#1760ed]">▱</span>;
 }
 function StockList({
+  items,
+  watchlistId,
   selected,
   onSelect,
+  onReorder,
 }: {
+  items: WatchlistCheckItem[];
+  watchlistId: string;
   selected: string;
   onSelect: (symbol: string) => void;
+  onReorder: (source: string, target: string, after: boolean) => void;
 }) {
+  const [dropTarget, setDropTarget] = useState<{
+    symbol: string;
+    after: boolean;
+  } | null>(null);
   return (
     <section className="rounded-xl border border-slate-200">
       <div className="border-b border-slate-200 p-3">
@@ -192,21 +216,49 @@ function StockList({
       <table className="w-full text-left">
         <thead className="bg-slate-50 text-sm">
           <tr className="h-12">
-            <th className="w-14" />
             <th>銘柄名</th>
             <th>前日比</th>
             <th>5日前比</th>
           </tr>
         </thead>
         <tbody>
-          {watchlistCheckItems.map((row) => (
+          {items.map((row) => (
             <tr
               key={row.symbol}
-              className={`h-[66px] border-t border-slate-200 ${selected === row.symbol ? "bg-blue-50 ring-1 ring-inset ring-[#7faeff]" : ""}`}
+              draggable
+              onDragStart={(event) =>
+                startWatchlistDrag(event, {
+                  kind: "stock",
+                  sourceId: watchlistId,
+                  symbol: row.symbol,
+                })
+              }
+              onDragEnd={() => setDropTarget(null)}
+              onDragOver={(event) => {
+                if (!hasWatchlistDrag(event)) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move";
+                const rect = event.currentTarget.getBoundingClientRect();
+                setDropTarget({
+                  symbol: row.symbol,
+                  after: event.clientY > rect.top + rect.height / 2,
+                });
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                const drag = readWatchlistDrag(event);
+                if (drag?.kind === "stock" && drag.sourceId === watchlistId) {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  onReorder(
+                    drag.symbol,
+                    row.symbol,
+                    event.clientY > rect.top + rect.height / 2,
+                  );
+                }
+                setDropTarget(null);
+              }}
+              className={`h-[66px] cursor-grab border-t border-slate-200 active:cursor-grabbing ${selected === row.symbol ? "bg-blue-50 ring-1 ring-inset ring-[#7faeff]" : ""} ${dropTarget?.symbol === row.symbol ? (dropTarget.after ? "border-b-2 border-b-[#1760ed]" : "border-t-2 border-t-[#1760ed]") : ""}`}
             >
-              <td className="text-center text-slate-400">
-                <List className="mx-auto size-4" />
-              </td>
               <th>
                 <button
                   type="button"
@@ -243,9 +295,44 @@ function ChartPanel({
   item,
   data,
 }: {
-  item: (typeof watchlistCheckItems)[number];
+  item: WatchlistCheckItem;
   data: typeof chartCheckData.NVDA;
 }) {
+  const charts = useRef<IChartApi[]>([]);
+  const syncing = useRef(false);
+  const registerChart = useCallback((instance: IChartApi) => {
+    const currentRange = charts.current[0]
+      ?.timeScale()
+      .getVisibleLogicalRange();
+    charts.current.push(instance);
+    if (currentRange) {
+      instance.timeScale().setVisibleLogicalRange(currentRange);
+    } else {
+      instance.timeScale().fitContent();
+    }
+
+    const syncRange = (range: LogicalRange | null) => {
+      if (!range || syncing.current) return;
+      syncing.current = true;
+      try {
+        for (const other of charts.current) {
+          if (other === instance) continue;
+          const visible = other.timeScale().getVisibleLogicalRange();
+          if (visible?.from !== range.from || visible?.to !== range.to) {
+            other.timeScale().setVisibleLogicalRange(range);
+          }
+        }
+      } finally {
+        syncing.current = false;
+      }
+    };
+    instance.timeScale().subscribeVisibleLogicalRangeChange(syncRange);
+    return () => {
+      instance.timeScale().unsubscribeVisibleLogicalRangeChange(syncRange);
+      charts.current = charts.current.filter((chart) => chart !== instance);
+    };
+  }, []);
+
   return (
     <section className="min-w-0 rounded-xl border border-slate-200 p-4 shadow-[0_4px_14px_rgba(15,36,68,0.03)]">
       <div className="flex items-center justify-between">
@@ -275,13 +362,13 @@ function ChartPanel({
           <span className="border-l px-4 py-2">1Y</span>
         </div>
       </div>
-      <CandleChart candles={data.candles} />
+      <CandleChart candles={data.candles} registerChart={registerChart} />
       <div className="mt-1 border-t border-slate-200 pt-2">
         <div className="mb-1 text-sm font-semibold">
           出来高{" "}
           <span className="ml-3 font-normal text-slate-500">233.45M</span>
         </div>
-        <VolumeChart data={data.volumes} />
+        <VolumeChart data={data.volumes} registerChart={registerChart} />
       </div>
       <div className="mt-2 border-t border-slate-200 pt-3">
         <div className="text-sm">
@@ -290,13 +377,14 @@ function ChartPanel({
           <span className="text-orange-500">Signal 2.11</span>　
           <span className="text-[#009c50]">Histogram 0.23</span>
         </div>
-        <MacdChart candles={data.candles} />
+        <MacdChart candles={data.candles} registerChart={registerChart} />
       </div>
     </section>
   );
 }
 function CandleChart({
   candles,
+  registerChart,
 }: {
   candles: {
     date: string;
@@ -305,9 +393,9 @@ function CandleChart({
     low: number;
     close: number;
   }[];
+  registerChart: (chart: IChartApi) => () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const chart = useRef<IChartApi | null>(null);
   useEffect(() => {
     if (!ref.current) return;
     const instance = createChart(ref.current, {
@@ -321,7 +409,7 @@ function CandleChart({
         vertLines: { color: "#e2e8f0" },
         horzLines: { color: "#e2e8f0" },
       },
-      rightPriceScale: { borderVisible: false },
+      rightPriceScale: { borderVisible: false, minimumWidth: 70 },
       timeScale: { borderVisible: false },
     });
     const series = instance.addSeries(CandlestickSeries, {
@@ -335,46 +423,74 @@ function CandleChart({
     series.setData(
       candles.map((candle) => ({ ...candle, time: candle.date as Time })),
     );
-    instance.timeScale().fitContent();
-    chart.current = instance;
+    const unregister = registerChart(instance);
     const observer = new ResizeObserver(([entry]) =>
       instance.applyOptions({ width: entry.contentRect.width }),
     );
     observer.observe(ref.current);
     return () => {
       observer.disconnect();
+      unregister();
       instance.remove();
-      chart.current = null;
     };
-  }, [candles]);
+  }, [candles, registerChart]);
   return <div ref={ref} className="mt-2 h-[285px] w-full" />;
 }
 function VolumeChart({
   data,
+  registerChart,
 }: {
   data: { date: string; value: number; up: boolean }[];
+  registerChart: (chart: IChartApi) => () => void;
 }) {
-  return (
-    <div className="h-20 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
-          <XAxis dataKey="date" hide />
-          <YAxis hide />
-          <Tooltip />
-          <Bar dataKey="value" isAnimationActive={false}>
-            {data.map((entry) => (
-              <Cell key={entry.date} fill={entry.up ? "#ef4444" : "#64748b"} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const instance = createChart(ref.current, {
+      width: ref.current.clientWidth,
+      height: 80,
+      layout: {
+        background: { type: ColorType.Solid, color: "transparent" },
+        textColor: "#64748b",
+      },
+      grid: {
+        vertLines: { color: "#e2e8f0" },
+        horzLines: { visible: false },
+      },
+      rightPriceScale: { borderVisible: false, minimumWidth: 70 },
+      timeScale: { borderVisible: false, visible: false },
+    });
+    const series = instance.addSeries(HistogramSeries, {
+      priceLineVisible: false,
+      lastValueVisible: false,
+      priceFormat: { type: "volume" },
+    });
+    series.setData(
+      data.map((point) => ({
+        time: point.date as Time,
+        value: point.value,
+        color: point.up ? "#ef4444" : "#64748b",
+      })),
+    );
+    const unregister = registerChart(instance);
+    const observer = new ResizeObserver(([entry]) =>
+      instance.applyOptions({ width: entry.contentRect.width }),
+    );
+    observer.observe(ref.current);
+    return () => {
+      observer.disconnect();
+      unregister();
+      instance.remove();
+    };
+  }, [data, registerChart]);
+  return <div ref={ref} className="h-20 w-full" />;
 }
 function MacdChart({
   candles,
+  registerChart,
 }: {
   candles: { date: string; close: number }[];
+  registerChart: (chart: IChartApi) => () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -390,7 +506,7 @@ function MacdChart({
         vertLines: { color: "#e2e8f0" },
         horzLines: { color: "#e2e8f0" },
       },
-      rightPriceScale: { borderVisible: false },
+      rightPriceScale: { borderVisible: false, minimumWidth: 70 },
       timeScale: { borderVisible: false, visible: false },
     });
     const macd = calculateMacd(candles);
@@ -424,16 +540,17 @@ function MacdChart({
     signalLine.setData(
       macd.map((point) => ({ time: point.date as Time, value: point.signal })),
     );
-    instance.timeScale().fitContent();
+    const unregister = registerChart(instance);
     const observer = new ResizeObserver(([entry]) =>
       instance.applyOptions({ width: entry.contentRect.width }),
     );
     observer.observe(ref.current);
     return () => {
       observer.disconnect();
+      unregister();
       instance.remove();
     };
-  }, [candles]);
+  }, [candles, registerChart]);
   return <div ref={ref} className="mt-2 h-[118px] w-full" />;
 }
 function calculateMacd(candles: { date: string; close: number }[]) {

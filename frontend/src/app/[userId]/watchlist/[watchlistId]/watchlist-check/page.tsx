@@ -1,4 +1,3 @@
-/* biome-ignore-all lint/a11y/noStaticElementInteractions: native drag handle */
 "use client";
 
 import { Clock3, Plus, Trash2 } from "lucide-react";
@@ -8,21 +7,14 @@ import { Header } from "@/components/common/Header";
 import { WatchlistPageLayout } from "@/features/watchlist/components/WatchlistPageLayout";
 import { WatchlistSidebar } from "@/features/watchlist/components/WatchlistSidebar";
 import { WatchlistStockSearch } from "@/features/watchlist/components/WatchlistStockSearch";
-import { watchlistCheckItems } from "@/features/watchlist/mocks/watchlistCheck";
+import { useWatchlists } from "@/features/watchlist/components/WatchlistStore";
+import {
+  hasWatchlistDrag,
+  readWatchlistDrag,
+  startWatchlistDrag,
+} from "@/features/watchlist/components/watchlistDrag";
+import type { WatchlistCheckItem } from "@/features/watchlist/mocks/watchlistCheck";
 
-const weekly = ["#26/08/17 week", "#26/08/10 week", "#26/08/03 week"];
-const permanent = [
-  "検索履歴ウォッチリスト",
-  "#本日注目",
-  "#明日注目",
-  "なんとなく注目テック",
-  "memory & light",
-  "日本バリュー株",
-  "セクター代表銘柄",
-  "日本高配当",
-  "米国成長株",
-  "セクター別etf",
-];
 const changeText = (value: number) =>
   `${value > 0 ? "+" : ""}${value.toFixed(1)}%`;
 
@@ -31,22 +23,9 @@ export default function WatchlistCheckPage() {
     userId: string;
     watchlistId: string;
   }>();
-  const [items, setItems] = useState(watchlistCheckItems);
+  const { getStocks, reorderStocks, removeStock } = useWatchlists();
+  const items = getStocks(watchlistId);
   const [selected, setSelected] = useState("NVDA");
-  const [dragged, setDragged] = useState<string | null>(null);
-  const reorder = (target: string) => {
-    if (!dragged) return;
-    setItems((current) => {
-      const from = current.findIndex((item) => item.symbol === dragged);
-      const to = current.findIndex((item) => item.symbol === target);
-      if (from < 0 || to < 0) return current;
-      const next = [...current];
-      const [item] = next.splice(from, 1);
-      next.splice(to, 0, item);
-      return next;
-    });
-    setDragged(null);
-  };
   return (
     <div className="min-h-screen bg-[#f3f6fa] text-[#10294c]">
       <Header
@@ -60,7 +39,7 @@ export default function WatchlistCheckPage() {
             userId={userId}
             watchlistId={watchlistId}
             currentTab="watchlist"
-            sidebar={<WatchlistSidebar weekly={weekly} permanent={permanent} />}
+            sidebar={<WatchlistSidebar />}
           >
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_190px]">
               <div className="flex flex-col gap-3 rounded-xl border border-slate-200 p-3 shadow-[0_4px_14px_rgba(15,36,68,0.03)] xl:flex-row xl:items-start">
@@ -93,15 +72,12 @@ export default function WatchlistCheckPage() {
                 <StockTable
                   items={items}
                   selected={selected}
-                  dragged={dragged}
                   onSelect={setSelected}
-                  onDragStart={setDragged}
-                  onDrop={reorder}
-                  onDelete={(symbol) =>
-                    setItems((current) =>
-                      current.filter((item) => item.symbol !== symbol),
-                    )
+                  watchlistId={watchlistId}
+                  onDrop={(source, target, after) =>
+                    reorderStocks(watchlistId, source, target, after)
                   }
+                  onDelete={(symbol) => removeStock(watchlistId, symbol)}
                 />
               </div>
             </div>
@@ -115,26 +91,28 @@ export default function WatchlistCheckPage() {
 function StockTable({
   items,
   selected,
-  dragged,
+  watchlistId,
   onSelect,
-  onDragStart,
   onDrop,
   onDelete,
 }: {
-  items: typeof watchlistCheckItems;
+  items: WatchlistCheckItem[];
   selected: string;
-  dragged: string | null;
+  watchlistId: string;
   onSelect: (symbol: string) => void;
-  onDragStart: (symbol: string) => void;
-  onDrop: (symbol: string) => void;
+  onDrop: (source: string, target: string, after: boolean) => void;
   onDelete: (symbol: string) => void;
 }) {
+  const [dragged, setDragged] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{
+    symbol: string;
+    after: boolean;
+  } | null>(null);
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full min-w-[1000px] text-left">
         <thead className="bg-slate-50">
           <tr className="h-12 text-sm font-semibold">
-            <th className="w-14" />
             <th>銘柄名</th>
             <th>価格</th>
             <th>前日比</th>
@@ -149,19 +127,44 @@ function StockTable({
           {items.map((item) => (
             <tr
               key={item.symbol}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={() => onDrop(item.symbol)}
-              className={`h-[66px] border-t border-slate-200 ${dragged === item.symbol ? "bg-blue-50" : ""}`}
+              draggable
+              onDragStart={(event) => {
+                setDragged(item.symbol);
+                startWatchlistDrag(event, {
+                  kind: "stock",
+                  sourceId: watchlistId,
+                  symbol: item.symbol,
+                });
+              }}
+              onDragEnd={() => {
+                setDragged(null);
+                setDropTarget(null);
+              }}
+              onDragOver={(event) => {
+                if (!hasWatchlistDrag(event)) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move";
+                const rect = event.currentTarget.getBoundingClientRect();
+                setDropTarget({
+                  symbol: item.symbol,
+                  after: event.clientY > rect.top + rect.height / 2,
+                });
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                const drag = readWatchlistDrag(event);
+                if (drag?.kind === "stock" && drag.sourceId === watchlistId) {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  onDrop(
+                    drag.symbol,
+                    item.symbol,
+                    event.clientY > rect.top + rect.height / 2,
+                  );
+                }
+                setDropTarget(null);
+              }}
+              className={`h-[66px] cursor-grab border-t border-slate-200 active:cursor-grabbing ${dragged === item.symbol ? "opacity-50" : ""} ${dropTarget?.symbol === item.symbol ? (dropTarget.after ? "border-b-2 border-b-[#1760ed]" : "border-t-2 border-t-[#1760ed]") : ""}`}
             >
-              <td className="text-center text-slate-400">
-                <span
-                  draggable
-                  onDragStart={() => onDragStart(item.symbol)}
-                  className="inline-block cursor-grab select-none text-lg active:cursor-grabbing"
-                >
-                  ☷
-                </span>
-              </td>
               <th className="font-semibold text-[#075cdf]">
                 <button
                   type="button"
