@@ -72,7 +72,7 @@ Domaの外部SQLは `src/main/resources/META-INF/com/stockhub/backend/` 以下�
 
 ## Analytics
 
-**## Analytics**
+engine/
 
 - `common/`: Analytics全体で使用する共通基盤
   - `config/`: 設定・環境変数
@@ -99,14 +99,14 @@ AnalyticsはDB接続用の`repositories/`を持たず、DBの読み書きはSpri
 ## docs
 
 - basic information: AGENTS.md
-- System Architecture: docs/ARCHITECTURE.md
-- Feature detail: docs/FEATURES.md
-- Database design: docs/DATABASE.md
-- API design: docs/API.md
-- Directory design: docs/DIRECTORY.md
-- 実装手順や実装用参照資料: docs/implements
-- 各機能の仕様書: docs/specification
-- 人間用のメモ: docs/forHuman
+- System Architecture: docs/english/ARCHITECTURE.md
+- Feature detail: docs/english/FEATURES.md
+- Database design: docs/english/DATABASE.md
+- API design: docs/english/API.md
+- Directory design: docs/english/DIRECTORY.md
+- 実装手順や実装用参照資料: docs/english/implements
+- 各機能の仕様書: docs/english/specification
+- 人間用のメモ: docs/engish/forHuman
 
 
 
@@ -115,6 +115,7 @@ AnalyticsはDB接続用の`repositories/`を持たず、DBの読み書きはSpri
 
 関連性の高いコードを近くに配置するFeature-based構成を基本とする。
 
+実装に際しては、本mdファイルの## frontend, ## backend, ## analyticsに書いてあるディレクトリ構造に従って、適切なファイルに実装すること。
 Frontendは「画面固有 → `app/`」「feature内共有 → `features/`」「全体共有 → `src`直下」で分ける。
 Backendはfeature / domain単位で分け、その内部を`controller`・`service`・`dao`などのlayerに分ける。複数featureから使用される場合でも、明確なdomainがあるものは`common/`ではなく、そのdomainが所有する。
 これにより、変更時に探索する範囲を限定し、人間およびCoding Agentのコード探索量を抑える。
