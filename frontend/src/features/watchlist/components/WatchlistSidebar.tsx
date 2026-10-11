@@ -67,6 +67,8 @@ export function WatchlistSidebar() {
   const rows = (names: string[], group: WatchlistGroup) =>
     names.map((name, index) => {
       const id = listId(name);
+      const isSelected =
+        watchlistId === id || watchlistId === encodeURIComponent(id);
       return (
         // Native drag events are attached to the whole watchlist row.
         // biome-ignore lint/a11y/noStaticElementInteractions: native drag target
@@ -99,7 +101,8 @@ export function WatchlistSidebar() {
           <Link
             draggable={false}
             href={`/${userId}/watchlist/${encodeURIComponent(id)}/${destinationPage}`}
-            className={`block truncate hover:text-[#075cdf] ${watchlistId === id ? "font-semibold text-[#075cdf]" : ""}`}
+            aria-current={isSelected ? "page" : undefined}
+            className={`block truncate hover:text-[#075cdf] ${isSelected ? "font-semibold text-[#075cdf]" : ""}`}
           >
             {name}
           </Link>

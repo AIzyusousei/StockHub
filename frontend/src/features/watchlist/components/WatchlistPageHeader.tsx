@@ -23,9 +23,10 @@ export function WatchlistPageHeader({
   const { state } = useWatchlists();
   const selectedName =
     watchlistName ??
-    [...state.weekly, ...state.permanent].find(
-      (name) => listId(name) === watchlistId,
-    ) ??
+    [...state.weekly, ...state.permanent].find((name) => {
+      const id = listId(name);
+      return watchlistId === id || watchlistId === encodeURIComponent(id);
+    }) ??
     "日本株";
   return (
     <div className="flex items-start gap-10">
