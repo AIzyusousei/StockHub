@@ -18,7 +18,7 @@ It is an application that allows users to create watchlists, custom indexes, and
 Detailed specifications for each component are available in the documents below.
 When implementing related functionality, refer to the relevant document.
 - basic information: AGENTS.md
-- System Architecture: docs/englih/ARCHITECTURE.md
+- System Architecture: docs/english/ARCHITECTURE.md
 - Feature detail: docs/english/FEATURES.md
 - Database design: docs/english/DATABASE.md
 - API design: docs/english/API.md
