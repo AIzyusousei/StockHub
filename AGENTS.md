@@ -1,49 +1,46 @@
-# StockHub 開発AI向け説明書
+﻿# Instructions for StockHub Development AI
 
 ## Abstract
 
-StockHubは、株式投資の投資判断に向けた分析を行うwebアプリである。
-ウォッチリスト、自作indexの作成、自作スクリーニング法の作成などが行えるアプリである。
+StockHub is a web application that performs analyses to support stock investment decisions.
+It is an application that allows users to create watchlists, custom indexes, and custom screening methods.
 
 ## Stack
 
-- frontend: Next.js/ tailwindCSS でUI・画面状態・ユーザー操作などのfrontend処理を担当する。
-- backend: Java Spring Boot/ Spring Doma でアプリケーションロジック・認証認可などのbackend処理を担当する。
-- analytics: Python でデータ取得・統計処理などの分析処理を担当する。
+- frontend: Next.js/ tailwindCSS handles frontend processing such as the UI, screen state, and user interactions.
+- backend: Java Spring Boot/ Spring Doma handles backend processing such as application logic and authentication/authorization.
+- analytics: Python handles analysis processing such as data retrieval and statistical processing.
 - database: PostgreSQL
-- api: (for stock information: yfinance) 
-
+- api: (for stock information: yfinance)
 
 # Documentation
 
-各要素の詳細な指定は、以下に存在する。関連する実装を行う場合、当該documentを参照すること。
+Detailed specifications for each component are available in the documents below.
+When implementing related functionality, refer to the relevant document.
 - basic information: AGENTS.md
 - System Architecture: docs/englih/ARCHITECTURE.md
 - Feature detail: docs/english/FEATURES.md
 - Database design: docs/english/DATABASE.md
 - API design: docs/english/API.md
-- Directory design: docs/english/DIRECTORY.md 
+- Directory design: docs/english/DIRECTORY.md
 
 # Future Development
 
-StockHubは、将来的なIndexArenaの開発を前提として設計する。
+StockHub is designed with the future development of IndexArena in mind.
 
-IndexArenaでは、StockHubの機能を基盤として、
-自作Indexの共有・比較・競争や、投資家全体の情報を利用した分析機能を追加する予定である。
+IndexArena is planned to build on StockHub's functionality and add features for sharing, comparing, and competing with custom indexes, as well as analysis using information from investors as a whole.
 
-StockHubではyfinanceを利用するが、
-IndexArenaではmarketstack等の別data providerへ変更する可能性がある。
+StockHub uses yfinance, but IndexArena may switch to another data provider, such as marketstack.
 
-そのため、business logicを特定のdata providerへ直接依存させないこと。
+Therefore, business logic must not directly depend on a specific data provider.
 
-ただし、将来拡張のための過度な実装は行わない。
-
+However, do not overengineer for future extensibility.
 
 # Development Rules
 
-- [重要]react/ java/ python初心者に対して理解しやすい、簡単な文法を使用する実装にすること。ただし、ロジックの難解さは許容するものとする。
-- Frontendからdatabaseやstock data providerへ直接アクセスせず、backendを介する形とする。
-- analyticsからdatabaseへ直接アクセスせず、backendを介する形とする。
-- Backendは原則 Controller → Service → DAO の依存方向とする
-- Database accessにはDomaを使用する
-- ControllerからEntityを直接responseとして返さない
+- [Important] Use simple syntax that is easy for beginners in React/Java/Python to understand. However, complexity in the logic itself is acceptable.
+- Do not access the database or stock data provider directly from the frontend; route access through the backend.
+- Do not access the database directly from analytics; route access through the backend.
+- As a rule, the dependency direction in the backend should be Controller → Service → DAO.
+- Use Doma for database access.
+- Do not return Entities directly as responses from Controllers.
