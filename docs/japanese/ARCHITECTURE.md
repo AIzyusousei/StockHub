@@ -34,3 +34,10 @@ ControllerからDoma Entityを直接返さず、DTOへ変換して返す。
 株式データ取得・分析・計算を担当する。Market Overviewの日次バッチは、
 `yfinance`で日足データを取得し、Spring Boot内部APIへ送信する。
 AnalyticsはPostgreSQLへ直接接続しない。
+
+## Notes
+- Frontendからdatabaseやstock data providerへ直接アクセスせず、backendを介する形とする。
+- analyticsからdatabaseへ直接アクセスせず、backendを介する形とする。
+- Backendは原則 Controller → Service → DAO の依存方向とする
+- Database accessにはDomaを使用する
+- ControllerからEntityを直接responseとして返さない

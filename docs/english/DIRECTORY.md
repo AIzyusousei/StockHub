@@ -113,9 +113,12 @@ Analytics does not have `repositories/` for database connections. Database reads
 
 ## Directory Policy
 
-Use a feature-based structure as the default, placing closely related code near each other.
+Use a feature-based structure as the default, placing closely related code near one another.
 
-For the Frontend, separate code into “screen-specific → `app/`,” “shared within a feature → `features/`,” and “shared across the application → directly under `src`.”
-For the Backend, organize by feature / domain, then divide the contents into layers such as `controller`, `service`, and `dao`. Even when something is used by multiple features, if it has a clearly defined domain, it belongs to that domain rather than `common/`.
+When implementing, follow the directory structures described under `## frontend`, `## backend`, and `## analytics` in this Markdown file, and implement in the appropriate files.
 
-This limits the areas that need to be explored when making changes, reducing the amount of code exploration required by people and Coding Agents.
+For the frontend, separate code into “screen-specific → `app/`,” “shared within a feature → `features/`,” and “shared across the application → directly under `src`.”
+
+For the backend, organize by feature or domain, and divide the contents into layers such as `controller`, `service`, and `dao`. Even if something is used by multiple features, if it belongs to a clearly defined domain, that domain should own it rather than placing it in `common/`.
+
+This limits the scope of the search when making changes and reduces the amount of code exploration required by both people and Coding Agents.

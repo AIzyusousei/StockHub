@@ -8,8 +8,9 @@ import {
   Search,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { type DragEvent, useState } from "react";
+import { WatchlistSidebarCard } from "@/features/watchlist/components/WatchlistSidebarCard";
 import {
   listId,
   useWatchlists,
@@ -19,13 +20,19 @@ import {
   hasWatchlistDrag,
   readWatchlistDrag,
   startWatchlistDrag,
-} from "@/features/watchlist/components/watchlistDrag";
+} from "@/features/watchlist/utils/watchlistDrag";
 
 export function WatchlistSidebar() {
   const { userId, watchlistId } = useParams<{
     userId: string;
     watchlistId?: string;
   }>();
+  const pathname = usePathname();
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const destinationPage =
+    pathSegments[1] === "watchlist" && pathSegments.length === 4
+      ? pathSegments[3]
+      : "watchlist-check";
   const { state, copyStock, moveList } = useWatchlists();
   const [draggedList, setDraggedList] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{
@@ -91,7 +98,7 @@ export function WatchlistSidebar() {
         >
           <Link
             draggable={false}
-            href={`/${userId}/watchlist/${encodeURIComponent(id)}/watchlist-check`}
+            href={`/${userId}/watchlist/${encodeURIComponent(id)}/${destinationPage}`}
             className={`block truncate hover:text-[#075cdf] ${watchlistId === id ? "font-semibold text-[#075cdf]" : ""}`}
           >
             {name}
@@ -115,13 +122,13 @@ export function WatchlistSidebar() {
           検索
         </button>
       </div>
-      <SideCard icon={<CalendarDays />} title="週次ウォッチリスト">
+      <WatchlistSidebarCard icon={<CalendarDays />} title="週次ウォッチリスト">
         {rows(state.weekly, "weekly")}
         <div className="mt-2 flex items-center justify-center gap-2 text-sm">
           もっと見る <ChevronRight className="size-4" />
         </div>
-      </SideCard>
-      <SideCard
+      </WatchlistSidebarCard>
+      <WatchlistSidebarCard
         icon={<Bookmark />}
         title="ウォッチリスト"
         action={
@@ -134,37 +141,12 @@ export function WatchlistSidebar() {
         }
       >
         {rows(state.permanent, "permanent")}
-      </SideCard>
-      <SideCard icon={<History />} title="検索履歴ウォッチリスト">
+      </WatchlistSidebarCard>
+      <WatchlistSidebarCard icon={<History />} title="検索履歴ウォッチリスト">
         <p className="pl-2 text-sm text-slate-500">
           最近の検索履歴（最大20件）
         </p>
-      </SideCard>
+      </WatchlistSidebarCard>
     </aside>
-  );
-}
-
-function SideCard({
-  icon,
-  title,
-  children,
-  action,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="mt-3 rounded-xl border border-slate-200 p-4">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-3 font-semibold">
-          <span className="text-[#1760ed]">{icon}</span>
-          {title}
-        </h2>
-        {action}
-      </div>
-      {children}
-    </div>
   );
 }

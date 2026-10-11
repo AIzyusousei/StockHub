@@ -36,3 +36,10 @@ Responsible for retrieving, analyzing, and calculating stock data. The daily Mar
 `yfinance` and sends it to an internal Spring Boot API.
 
 Analytics does not connect directly to PostgreSQL.
+
+## Notes
+- The frontend should access the database and stock data provider through the backend, not directly.
+- Analytics should access the database through the backend, not directly.
+- The backend should generally follow the dependency direction Controller → Service → DAO.
+- Use Doma for database access.
+- Controllers should not return entities directly in responses.

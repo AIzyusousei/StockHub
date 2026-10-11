@@ -115,6 +115,7 @@ AnalyticsはDB接続用の`repositories/`を持たず、DBの読み書きはSpri
 
 関連性の高いコードを近くに配置するFeature-based構成を基本とする。
 
+実装に際しては、本mdファイルの## frontend, ## backend, ## analyticsに書いてあるディレクトリ構造に従って、適切なファイルに実装すること。
 Frontendは「画面固有 → `app/`」「feature内共有 → `features/`」「全体共有 → `src`直下」で分ける。
 Backendはfeature / domain単位で分け、その内部を`controller`・`service`・`dao`などのlayerに分ける。複数featureから使用される場合でも、明確なdomainがあるものは`common/`ではなく、そのdomainが所有する。
 これにより、変更時に探索する範囲を限定し、人間およびCoding Agentのコード探索量を抑える。
