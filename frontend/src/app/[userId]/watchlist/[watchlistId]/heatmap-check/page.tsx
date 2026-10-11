@@ -119,6 +119,7 @@ function HeatmapMain() {
               data={heatmapItems}
               dataKey="size"
               nameKey="name"
+              isAnimationActive={false}
               content={<HeatmapContent />}
             />
           </ResponsiveContainer>
